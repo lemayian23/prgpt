@@ -4,7 +4,7 @@ function App() {
   const [prs, setPrs] = useState([]);
 
   useEffect(() => {
-    fetch('http://localhost:3000/webhook')
+    fetch('http://localhost:3000/prs')
       .then(res => res.json())
       .then(data => setPrs(data));
   }, []);

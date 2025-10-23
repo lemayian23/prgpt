@@ -1,20 +1,33 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const axios = require('axios');
+from flask import Flask, request
+from flask_cors import CORS
+app = Flask(__name__)
+CORS(app)
 
-const app = express();
-app.use(bodyParser.json());
+@app.route('/webhook', methods=['POST'])
+def webhook():
+    data = request.json
+    if data.get('action') in ['opened', 'synchronize']:
+        print(f"Received PR {data['pull_request']['id']}")
+        return {"status": "received"}, 200
+    return {"error": "Unsupported action"}, 400
 
-app.post('/webhook', async (req, res) => {
-  const { action, pull_request } = req.body;
-  if (action === 'opened' || action === 'synchronize') {
-    const prId = pull_request.id;
-    // Trigger worker (simulated for now)
-    console.log(`Received PR ${prId}, queuing for analysis`);
-    res.status(200).send('Webhook received');
-  } else {
-    res.status(400).send('Unsupported action');
-  }
-});
 
-app.listen(3000, () => console.log('API running on port 3000'));
+@app.route('/prs', methods=['GET'])
+def list_prs():
+    # Temporary mocked data to unblock UI
+    return [
+        {
+            "id": 1,
+            "summary": "Initial PR",
+            "reviewBullets": ["Check syntax", "Review tests", "Optimize code"],
+            "comment": "Looks good!"
+        }
+    ]
+
+
+@app.route('/health', methods=['GET'])
+def health():
+    return {"status": "ok"}, 200
+
+if __name__ == "__main__":
+    app.run(port=3000)

@@ -1,7 +1,7 @@
 build:
     docker build -t prgpt-api .
 run-local:
-    node api/app.py
+    python api/app.py
 test:
     pytest tests/
 seed:
